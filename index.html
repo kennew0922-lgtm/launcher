@@ -29,12 +29,31 @@
             backdrop-filter: blur(5px);
         }
 
-        /* 🌸 セクション区切り（完全黒バー） */
+        /* 🌸 左右レイアウトコンテナ */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            margin-top: 60px;
+        }
+
+        .left-content {
+            flex: 4;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+        }
+
+        .right-content {
+            flex: 6;
+            position: sticky;
+            top: 60px;
+        }
+
+        /* 🌸 セクション区切り */
         .section-title {
-            background: #000; /* 完全な黒 */
+            background: #000;
             color: #00f2fe;
             padding: 10px 20px;
-            margin: 40px 0 20px 0; /* 上にバナー分の余白 */
+            margin: 20px 0 15px 0;
             font-size: 12px;
             font-weight: bold;
             border-left: 5px solid #00f2fe;
@@ -42,135 +61,120 @@
             box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.2);
         }
 
-
-        /* ショップセクション用の余白調整 */
-        .shop-title {
-            margin-top: 20px; 
-        }
-
-        /* 🌸 写真格納庫（グリッド） */
+        /* 🌸 アイテム枠（グリッド） */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            /* 🌸 アイコンのサイズに合わせて幅を小さく調整 */
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 15px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 242, 254, 0.15);
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
         }
 
-        .memory-card {
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
+        /* 🌸 アイコン画像（リンク）の魔法 */
+        .icon-link {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             transition: 0.3s;
-            text-decoration: none; /* リンクの線を消す */
-            display: block;
         }
 
-        .memory-card:hover {
+        /* 🌸 ホバーで画像だけが「ふわっと」浮き上がる */
+        .icon-link:hover img {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
             border-color: #00f2fe;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-            transform: scale(1.02);
         }
 
-        .memory-card img {
-            width: 100%;
-            height: 100px;
+        .icon-link img {
+            width: 55px;
+            height: 55px;
             object-fit: cover;
-            border-radius: 2px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 4px;
+            transition: 0.3s;
         }
 
-        .memory-card .label {
+        .icon-link .label {
             margin-top: 8px;
-            font-size: 11px;
+            font-size: 10px;
             color: #00f2fe;
             text-align: center;
+            width: 100%;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
 
-        /* 🌸 カレンダーをダークにする魔法のフィルター */
-.right-content iframe {
-    filter: invert(90%) hue-rotate(180deg) brightness(1.1) contrast(0.9);
-    border-radius: 8px;
-    /* 🌸 背景の白がチラ見えしないように裏側を黒くしておく */
-    background-color: #000;
-}
+        /* 🌸 カレンダーダークフィルター */
+        .right-content iframe {
+            filter: invert(90%) hue-rotate(180deg) brightness(1.1) contrast(0.9);
+            border-radius: 8px;
+            background-color: #000;
+        }
 
-        /* 🌸 左右分割のためのメインコンテナ */
-.main-layout {
-    display: flex;
-    gap: 20px;
-    margin-top: 60px; /* バナーの高さ分 */
-}
-
-/* 🌸 左側（リンク集）の設定：幅40% */
-.left-content {
-    flex: 4;
-    overflow-y: auto;
-    height: calc(100vh - 80px); /* 画面の高さに合わせる */
-}
-
-/* 🌸 右側（カレンダー）の設定：幅60%（固定気味） */
-.right-content {
-    flex: 6;
-    position: sticky;
-    top: 60px;
-}
-
-        /* カスタムスクロールバー */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #345485; }
     </style>
 </head>
 <body>
 
-    <div class="system-banner">
-        "Link & Calendar"
-    </div>
+    <div class="system-banner">"Link & Calendar"</div>
 
-    <!-- 🌸 ここから左右分割の魔法 -->
     <div class="main-layout">
-
-        <!-- 🌸 左側：リンク集エリア -->
         <div class="left-content">
-            <div style="margin-bottom: 20px;">
+            <div style="font-size: 12px; margin-bottom: 20px; line-height: 1.8;">
                 [INDEX]<br>
                 - <a href="#section1" style="color:#00f2fe;">BUSINESS WEBSITE</a><br>
-                - <a href="#section2" style="color:#00f2fe;">WORK WEBSITE</a>
+                - <a href="#section2" style="color:#00f2fe;">WORK WEBSITE (MATERIAL)</a><br>
+                - <a href="#section3" style="color:#00f2fe;">WORK WEBSITE (CONVERTER)</a>
             </div>
 
             <!-- BUSINESS セクション -->
             <div class="section-title" id="section1">BUSINESS WEBSITE</div>
             <div class="gallery">
-                <!-- ここに既存の memory-card たちを入れる -->
-                <div class="memory-card">
+                <a href="https://www.amazon.co.jp/" target="_blank" class="icon-link">
                     <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo1.jpg">
-                    <div class="label">Fantasy Projector</div>
-                </div>
-                <!-- ...続く -->
+                </a>
+                <a href="#" class="icon-link">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo2.jpg">
+                </a>
+                <a href="#" class="icon-link">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo3.jpg">
+                </a>
             </div>
 
-            <!-- WORK セクション -->
-            <div class="section-title shop-title" id="section2">WORK WEBSITE</div>
+            <!-- WORK セクション (MATERIAL) -->
+            <div class="section-title" id="section2">WORK WEBSITE (MATERIAL)</div>
             <div class="gallery">
-                <!-- ここに既存の Amazon や Mercari を入れる -->
-                <a href="https://www.amazon.co.jp/" target="_blank" class="memory-card">
+                <a href="https://www.amazon.co.jp/" target="_blank" class="icon-link">
                     <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo4.jpg">
-                    <div class="label">Amazon</div>
                 </a>
-                <!-- ...続く -->
+                <a href="https://jp.mercari.com/" target="_blank" class="icon-link">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo5.jpg">
+                </a>
+            </div>
+
+            <!-- WORK セクション (CONVERTER) -->
+            <div class="section-title" id="section3">WORK WEBSITE (CONVERTER)</div>
+            <div class="gallery">
+                <a href="#" class="icon-link">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo4.jpg">
+                </a>
+                <a href="#" class="icon-link">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo4.jpg">
+                </a>
             </div>
         </div>
 
-        <!-- 🌸 右側：カレンダーエリア -->
         <div class="right-content">
             <iframe src="https://calendar.google.com/calendar/embed?src=kennew0922%40gmail.com&ctz=Asia%2FTokyo" 
-                    style="border:1px solid rgba(0,242,254,0.3); width:100%; height:500px;" frameborder="0" scrolling="no"></iframe>
+                    style="border:1px solid rgba(0,242,254,0.3); width:100%; height:550px;" frameborder="0" scrolling="no"></iframe>
         </div>
-
-    </div> <!-- main-layout 終わり -->
-
+    </div>
 </body>
 </html>
-
-
