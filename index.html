@@ -64,7 +64,6 @@
         /* 🌸 アイテム枠（グリッド） */
         .gallery {
             display: grid;
-            /* 🌸 アイコンのサイズに合わせて幅を小さく調整 */
             grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
@@ -83,7 +82,6 @@
             transition: 0.3s;
         }
 
-        /* 🌸 ホバーで画像だけが「ふわっと」浮き上がる */
         .icon-link:hover img {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
@@ -97,17 +95,6 @@
             border: 1px solid rgba(0, 242, 254, 0.3);
             border-radius: 4px;
             transition: 0.3s;
-        }
-
-        .icon-link .label {
-            margin-top: 8px;
-            font-size: 10px;
-            color: #00f2fe;
-            text-align: center;
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
         }
 
         /* 🌸 カレンダーダークフィルター */
@@ -140,14 +127,14 @@
                 <a href="https://www.dlsite.com/circle/circle/webup" target="_blank" class="icon-link">
                     <img src="https://kennew0922-lgtm.github.io/launcher/photo1.jpg">
                 </a>
-             <a href="https://dojin.dmm.co.jp/" target="_blank" class="icon-link">
+                <a href="https://dojin.dmm.co.jp/" target="_blank" class="icon-link">
                     <img src="https://kennew0922-lgtm.github.io/launcher/photo2.jpg">
                 </a>
-             <a href="https://manage.booth.pm/" target="_blank" class="icon-link">
+                <a href="https://manage.booth.pm/" target="_blank" class="icon-link">
                     <img src="https://kennew0922-lgtm.github.io/launcher/photo3.jpg">
                 </a>
-            </div>
-             <a href="https://creator.line.me/my/UCustGV8U48Ytg8G/sticker/?status=all&query=&page=1" target="_blank" class="icon-link">
+                <!-- photo4はここに入れます！ -->
+                <a href="https://creator.line.me/my/UCustGV8U48Ytg8G/sticker/?status=all&query=&page=1" target="_blank" class="icon-link">
                     <img src="https://kennew0922-lgtm.github.io/launcher/photo4.jpg">
                 </a>
             </div>
@@ -175,10 +162,11 @@
             </div>
         </div>
 
-            <div class="right-content">
-            <iframe src="https://calendar.google.com/calendar/embed?src=kennew0922%40gmail.com&ctz=Asia%2FTokyo" 
-            style="border:1px solid rgba(0,242,254,0.3); width:100%; height:400px;" frameborder="0" scrolling="no"></iframe>
-            </div>
+        <!-- 🌸 右側：カレンダーエリア（縦幅を調整！） -->
+        <div class="right-content">
+            <iframe src="https://calendar.google.com/calendar/embed?src=kennew0922%40gmail.com&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0" 
+                    style="border:1px solid rgba(0,242,254,0.3); width:100%; height:350px;" frameborder="0" scrolling="no"></iframe>
+        </div>
     </div>
 </body>
 </html>
