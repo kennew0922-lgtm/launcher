@@ -42,6 +42,7 @@
             box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.2);
         }
 
+
         /* ショップセクション用の余白調整 */
         .shop-title {
             margin-top: 20px; 
@@ -87,6 +88,35 @@
             text-overflow: ellipsis;
         }
 
+        /* 🌸 カレンダーをダークにする魔法のフィルター */
+.right-content iframe {
+    filter: invert(90%) hue-rotate(180deg) brightness(1.1) contrast(0.9);
+    border-radius: 8px;
+    /* 🌸 背景の白がチラ見えしないように裏側を黒くしておく */
+    background-color: #000;
+}
+
+        /* 🌸 左右分割のためのメインコンテナ */
+.main-layout {
+    display: flex;
+    gap: 20px;
+    margin-top: 60px; /* バナーの高さ分 */
+}
+
+/* 🌸 左側（リンク集）の設定：幅40% */
+.left-content {
+    flex: 4;
+    overflow-y: auto;
+    height: calc(100vh - 80px); /* 画面の高さに合わせる */
+}
+
+/* 🌸 右側（カレンダー）の設定：幅60%（固定気味） */
+.right-content {
+    flex: 6;
+    position: sticky;
+    top: 60px;
+}
+
         /* カスタムスクロールバー */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #345485; }
@@ -98,43 +128,49 @@
         "Link & Calendar"
     </div>
 
-      <!-- 📅 カレンダーエリア -->
-  <iframe src="https://calendar.google.com/calendar/embed?src=kennew0922%40gmail.com&ctz=Asia%2FTokyo" 
-          style="border:0; width:100%; height:500px;" frameborder="0"></iframe>
+    <!-- 🌸 ここから左右分割の魔法 -->
+    <div class="main-layout">
 
-    <!-- 🌸 ITEM LIST セクション -->
-    <div class="section-title">ITEM LIST</div>
-    <div class="gallery">
-        <div class="memory-card">
-            <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo1.jpg" alt="Memory 1">
-            <div class="label">Fantasy Projector</div>
-        </div>
-        <div class="memory-card">
-            <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo2.jpg" alt="Memory 1">
-            <div class="label">Ninten Switcher</div>
-        </div>
-        <div class="memory-card">
-            <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo3.jpg" alt="Memory 1">
-            <div class="label">Gibsun guitar</div>
-        </div>
-    </div>
+        <!-- 🌸 左側：リンク集エリア -->
+        <div class="left-content">
+            <div style="margin-bottom: 20px;">
+                [INDEX]<br>
+                - <a href="#section1" style="color:#00f2fe;">BUSINESS WEBSITE</a><br>
+                - <a href="#section2" style="color:#00f2fe;">WORK WEBSITE</a>
+            </div>
 
-    <!-- 🌸 SHOPPING SITE セクション -->
-    <div class="section-title shop-title">SHOPSITE</div>
-    <div class="gallery">
-        <!-- Amazonリンク（カード全体をリンクにしています） -->
-        <a href="https://www.amazon.co.jp/" target="_blank" rel="noopener" class="memory-card">
-            <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo4.jpg" alt="Amazon">
-            <div class="label">Amazon</div>
-        </a>
-        
-     <div class="gallery">
-        <a href="https://jp.mercari.com/" target="_blank" rel="noopener" class="memory-card">
-            <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo5.jpg" alt="Memory 1">
-            <div class="label">Mercari</div>
-        </a>
+            <!-- BUSINESS セクション -->
+            <div class="section-title" id="section1">BUSINESS WEBSITE</div>
+            <div class="gallery">
+                <!-- ここに既存の memory-card たちを入れる -->
+                <div class="memory-card">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo1.jpg">
+                    <div class="label">Fantasy Projector</div>
+                </div>
+                <!-- ...続く -->
+            </div>
+
+            <!-- WORK セクション -->
+            <div class="section-title shop-title" id="section2">WORK WEBSITE</div>
+            <div class="gallery">
+                <!-- ここに既存の Amazon や Mercari を入れる -->
+                <a href="https://www.amazon.co.jp/" target="_blank" class="memory-card">
+                    <img src="https://kennew0922-lgtm.github.io/Socrariu-items/photo4.jpg">
+                    <div class="label">Amazon</div>
+                </a>
+                <!-- ...続く -->
+            </div>
         </div>
-    </div> 
+
+        <!-- 🌸 右側：カレンダーエリア -->
+        <div class="right-content">
+            <iframe src="https://calendar.google.com/calendar/embed?src=kennew0922%40gmail.com&ctz=Asia%2FTokyo" 
+                    style="border:1px solid rgba(0,242,254,0.3); width:100%; height:500px;" frameborder="0" scrolling="no"></iframe>
+        </div>
+
+    </div> <!-- main-layout 終わり -->
 
 </body>
 </html>
+
+
