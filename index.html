@@ -95,7 +95,8 @@
             gap: 15px; margin-bottom: 30px; padding: 15px;
             border: 1px solid rgba(0, 242, 254, 0.15); background: rgba(255, 255, 255, 0.02);
         }
-/* 🌸 アイコンリンクの基本設定と光の魔法 */
+
+        /* 🌸 アイコンリンクの基本設定と光の魔法 */
         .icon-link img {
             width: 55px; height: 55px; object-fit: cover;
             border: 1px solid rgba(0, 242, 254, 0.3); 
@@ -118,6 +119,31 @@
         }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #345485; }
+
+         /* 🌸✨ アイコンリンクの基本設定と光の魔法 */
+        .icon-link-cloudia img {
+            width: 250px; height: 100px; object-fit: cover;
+            border: 1px solid rgba(0, 242, 254, 0.3); 
+            border-radius: 4px;
+            transition: all 0.3s ease; /* 変化をなめらかにする魔法 🌸 */
+            cursor: pointer;
+        }
+
+        /* 🌸✨ マウスを乗せた時の反応（ホバー） */
+        .icon-link-cloudia img:hover {
+            transform: translateY(-2px); /* 若干上に浮き上がります 🌸 */
+            border-color: #00f2fe; /* 縁の色をはっきりさせます 🌸 */
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.8); /* 淵に光を付与します 🌸 */
+            filter: brightness(1.2); /* アイコン自体も少し明るくします 🌸 */
+        }
+
+        /* ✨実用ランチャー側の小さいアイコンも同様に光らせる設定 */
+        .utility-launcher .icon-link-cloudia img {
+            width: 35px; height: 35px;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #345485; }
+
     </style>
 </head>
 <body>
@@ -132,7 +158,9 @@
                 - <a href="#section3" style="color:#00f2fe;">BUSINESS TOOLS</a><br>
                 - <a href="#section4" style="color:#00f2fe;">VIDEO CONFERENCE TOOLS</a><br>
                 - <a href="#section1" style="color:#00f2fe;">MY BUSINESS WEBSITE</a><br>
-                - <a href="#section2" style="color:#00f2fe;">ACCOUNTING MANAGEMENT</a>
+                - <a href="#section2" style="color:#00f2fe;">WEBSITW CREATION</a><br>
+                - <a href="#section6" style="color:#00f2fe;">ACCOUNTING MANAGEMENT</a><br>
+                - <a href="#section7" style="color:#00f2fe;">UPPERCASE CONVERTER</a>
             </div>
 
 <!-- BUSINESS セクション -->
@@ -271,13 +299,23 @@
             </div>
 
             <!-- WORK セクション ACCOUNTING MANAGEMENT -->
-            <div class="section-title" id="section2">ACCOUNTING MANAGEMENT</div>
+            <div class="section-title" id="section6">ACCOUNTING MANAGEMENT</div>
             <div class="gallery">
                 <a href="https://secure.freee.co.jp/" target="_blank" class="icon-link">
                     <img src="https://socrarius-tool.com/launcher/photo18.jpg">
                 </a>
                 <a href="https://myna.go.jp/" target="_blank" class="icon-link">
                     <img src="https://socrarius-tool.com/launcher/photo44.jpg">
+                </a>
+            </div>
+<br>
+<hr style="border: none; border-top: 1px solid #00e5ff80; width: 95%;">
+<br>
+            <!-- UPPERCASE CONVERTER -->
+            <div class="section-title" id="section7">UPPERCASE CONVERTER</div>
+            <div class="gallery">
+                <a href="https://socrarius-tool.com/converter/" target="_blank" class="icon-link-cloudia">
+                    <img src="https://socrarius-tool.com/converter/cloudia.webp">
                 </a>
             </div>
 
