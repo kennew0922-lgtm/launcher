@@ -162,6 +162,43 @@
             filter: brightness(1.2); /* アイコン自体も少し明るくします 🌸 */
         }
 
+        /* 🌸 カクカクデジタルフォントの読み込み 🌸 */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+/* ✨ デジタル時計コンテナのデザイン */
+#cyber-clock-container {
+    background: rgba(0, 10, 30, 0.6);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.15), inset 0 0 10px rgba(0, 242, 254, 0.1);
+    margin-bottom: 10px; /* カレンダーとの間の余白 */
+}
+
+/* 🕒 カクカクデジタル時刻（青く発光！） */
+#cyber-clock-time {
+    font-family: 'Share Tech Mono', monospace, sans-serif;
+    font-size: 38px;
+    font-weight: bold;
+    color: #00f2fe;
+    letter-spacing: 3px;
+    /* ★ 青く幻想的に光らせる魔法のドロップシャドウ！ */
+    text-shadow: 0 0 10px rgba(0, 242, 254, 0.8), 0 0 20px rgba(0, 242, 254, 0.4);
+    line-height: 1;
+}
+
+/* 📅 下部の日付表示 */
+#cyber-clock-date {
+    font-family: 'Share Tech Mono', 'Consolas', monospace;
+    font-size: 13px;
+    color: rgba(224, 247, 255, 0.8);
+    letter-spacing: 2px;
+    margin-top: 6px;
+    text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
+
         /* ✨実用ランチャー側の小さいアイコンも同様に光らせる設定 */
         .utility-launcher .icon-link-cloudia img {
             width: 35px; height: 35px;
@@ -348,6 +385,12 @@
 
         <!-- 右側：お天気 ＆ カレンダー ＆ 実用ランチャー -->
         <div class="right-content">
+
+            <!-- 🌸 サイバー・デジタル時計ユニット 🌸 -->
+            <div id="cyber-clock-container">
+            <div id="cyber-clock-time">00:00:00</div>
+            <div id="cyber-clock-date">2026/00/00 (―)</div>
+            </div>
             
             <!-- 🌸 天気君の横並び魔法 -->
             <div id="weather-panel" class="weather-panel">
@@ -425,6 +468,37 @@
             }
         }
         updateWeather();
+
+        /* ✨ リアルタイム・サイバー時計更新魔法 ✨ */
+function updateCyberClock() {
+    const now = new Date();
+    
+    // 時・分・秒を2桁揃えに
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    // 年・月・日と曜日
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const date = String(now.getDate()).padStart(2, '0');
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    const dayName = days[now.getDay()];
+
+    const timeElem = document.getElementById('cyber-clock-time');
+    const dateElem = document.getElementById('cyber-clock-date');
+
+    if (timeElem) {
+        timeElem.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    if (dateElem) {
+        dateElem.textContent = `${year}/${month}/${date} (${dayName})`;
+    }
+}
+
+// 初回実行＆1秒ごとにタイマー駆動！
+updateCyberClock();
+setInterval(updateCyberClock, 1000);
     </script>
 
 </body>
