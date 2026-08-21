@@ -114,6 +114,41 @@
         .weather-city { font-size: 14px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
         .weather-info { font-size: 22px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
 
+        /* 🌸 お天気エリア（時間帯オーバーレイ重畳対応） */
+        .weather-panel {
+        position: relative;
+        background-color: rgba(0, 170, 255, 0.1);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        border-radius: 8px;
+        padding: 12px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        backdrop-filter: blur(5px);
+        transition: background-image 1s ease-in-out;
+        overflow: hidden;
+        }
+
+        /* 🌸 時間帯カラーオーバーレイ層（背景画像/動画のすぐ上に重なる魔法） */
+        .weather-overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 1; /* 背景(0)より上 */
+        pointer-events: none; /* マウス操作を邪魔しない */
+        transition: background-color 1s ease-in-out;
+        }
+
+        /* テキスト等の要素はオーバーレイより上へ */
+        .weather-item {
+        position: relative;
+        z-index: 2; /* オーバーレイ(1)より上 */
+        text-align: center;
+        }
+
         /* 🌸 実用ランチャー（カレンダー上部） */
         .utility-launcher {
             display: grid;
@@ -532,7 +567,7 @@
           
 
 　　<script>
-        // --- 天気取得 ＆ 仙台リアルタイム天気背景連動魔法 ---
+       // --- 天気取得 ＆ 仙台リアルタイム天気背景 ＆ 時間帯オーバーレイ重畳魔法 ---
         async function updateWeather() {
             const destinations = [
                 { name: "SENDAI", lat: 38.2682, lon: 140.8694 },
@@ -595,6 +630,29 @@
                     if (!weatherPanel.style.backgroundImage.includes(bgWeatherImg)) {
                         weatherPanel.style.backgroundImage = bgUrl;
                     }
+
+                    // 🌸★ 時間帯に応じたカラーオーバーレイの適用魔法 ★🌸
+                    const currentHour = new Date().getHours();
+                    let overlayColor = "rgba(0, 0, 0, 0.75)"; // デフォルト：夜 (黒半透明 75%)
+
+                    if (currentHour >= 5 && currentHour < 8) {
+                        overlayColor = "rgba(255, 255, 255, 0.1)"; // 朝 (5:00 ~ 7:59)：白半透明 10%
+                    } else if (currentHour >= 8 && currentHour < 16) {
+                        overlayColor = "rgba(0, 0, 0, 0)";         // 昼 (8:00 ~ 15:59)：完全透明
+                    } else if (currentHour >= 16 && currentHour < 18) {
+                        overlayColor = "rgba(255, 50, 0, 0.5)";    // 夕方 (16:00 ~ 17:59)：赤半透明 50%
+                    } else {
+                        overlayColor = "rgba(0, 0, 0, 0.75)";      // 夜 (18:00 ~ 4:59)：黒半透明 75%
+                    }
+
+                    // パネル内部にオーバーレイ要素を自動挿入
+                    let overlayElem = weatherPanel.querySelector('.weather-overlay');
+                    if (!overlayElem) {
+                        overlayElem = document.createElement('div');
+                        overlayElem.className = 'weather-overlay';
+                        weatherPanel.appendChild(overlayElem);
+                    }
+                    overlayElem.style.backgroundColor = overlayColor;
                 }
             } catch (e) {
                 document.getElementById("weather-panel").innerHTML = "Weather Link Error";
@@ -602,8 +660,7 @@
         }
         updateWeather();
 
-        /* ✨ リアルタイム・サイバー時計更新魔法 ✨ */
-/* ✨ リアルタイム・サイバー時計 ＆ 時間帯背景連動更新魔法 ✨ */
+        /* ✨ リアルタイム・サイバー時計 ＆ 時間帯背景連動更新魔法 ✨ */
 function updateCyberClock() {
     const now = new Date();
     
@@ -639,7 +696,6 @@ function updateCyberClock() {
         }
 
         const bgUrl = `url("https://socrarius-tool.com/launcher/${bgImg}")`;
-        // 背景画像が変わった時だけ更新（無駄な処理を防ぐ）
         if (!clockContainer.style.backgroundImage.includes(bgImg)) {
             clockContainer.style.backgroundImage = bgUrl;
         }
