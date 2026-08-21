@@ -193,9 +193,14 @@
         /* 🌸 カクカクデジタルフォントの読み込み 🌸 */
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-/* ✨ デジタル時計コンテナのデザイン */
+/* ✨ デジタル時計コンテナのデザイン（時間帯背景連動バージョン） */
 #cyber-clock-container {
-    background: rgba(0, 10, 30, 0.6);
+    background-color: rgba(0, 10, 30, 0.6);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* 背景画像を半透過で美しく合成する魔法 🌸 */
+    /*background-blend-mode: overlay;*/
     border: 1px solid rgba(0, 242, 254, 0.4);
     border-radius: 8px;
     padding: 12px 20px;
@@ -203,6 +208,7 @@
     backdrop-filter: blur(8px);
     box-shadow: 0 0 15px rgba(0, 242, 254, 0.15), inset 0 0 10px rgba(0, 242, 254, 0.1);
     margin-bottom: 10px; /* カレンダーとの間の余白 */
+    transition: background-image 1s ease-in-out; /* 切替時のなめらかアニメーション 🌸 */
 }
 
 /* 🕒 カクカクデジタル時刻（青く発光！） */
@@ -532,11 +538,13 @@
         updateWeather();
 
         /* ✨ リアルタイム・サイバー時計更新魔法 ✨ */
+/* ✨ リアルタイム・サイバー時計 ＆ 時間帯背景連動更新魔法 ✨ */
 function updateCyberClock() {
     const now = new Date();
     
     // 時・分・秒を2桁揃えに
-    const hours = String(now.getHours()).padStart(2, '0');
+    const currentHour = now.getHours();
+    const hours = String(currentHour).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
     
@@ -547,8 +555,30 @@ function updateCyberClock() {
     const days = ['日', '月', '火', '水', '木', '金', '土'];
     const dayName = days[now.getDay()];
 
+    const clockContainer = document.getElementById('cyber-clock-container');
     const timeElem = document.getElementById('cyber-clock-time');
     const dateElem = document.getElementById('cyber-clock-date');
+
+    // 🌸★ 時間帯による背景切り替えロジック ★🌸
+    if (clockContainer) {
+        let bgImg = "night.webp"; // デフォルト（夜）
+
+        if (currentHour >= 5 && currentHour < 8) {
+            bgImg = "morning.webp"; // 朝 (5:00 ~ 07:59)
+        } else if (currentHour >= 8 && currentHour < 16) {
+            bgImg = "noon.webp";    // 昼 (8:00 ~ 15:59)
+        } else if (currentHour >= 16 && currentHour < 18) {
+            bgImg = "evening.webp"; // 夕方 (16:00 ~ 17:59)
+        } else {
+            bgImg = "night.webp";   // 夜 (19:00 ~ 4:59)
+        }
+
+        const bgUrl = `url("https://socrarius-tool.com/launcher/${bgImg}")`;
+        // 背景画像が変わった時だけ更新（無駄な処理を防ぐ）
+        if (!clockContainer.style.backgroundImage.includes(bgImg)) {
+            clockContainer.style.backgroundImage = bgUrl;
+        }
+    }
 
     if (timeElem) {
         timeElem.textContent = `${hours}:${minutes}:${seconds}`;
