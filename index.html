@@ -73,9 +73,15 @@
             gap: 15px;
         }
 
-        /* 🌸 お天気エリア（横配置） */
+        /* 🌸 お天気エリア（横配置＆リアルタイム天気背景連動バージョン） */
         .weather-panel {
-            background: rgba(0, 170, 255, 0.1);
+            position: relative;
+            background-color: rgba(0, 170, 255, 0.1);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* 背景画像を半透過で合成する設定（画像の場合） 🌸 */
+            /* background-blend-mode: overlay; */
             border: 1px solid rgba(0, 242, 254, 0.3);
             border-radius: 8px;
             padding: 12px;
@@ -83,10 +89,30 @@
             justify-content: space-around;
             align-items: center;
             backdrop-filter: blur(5px);
+            transition: background-image 1s ease-in-out;
+            overflow: hidden;
         }
+
+        /* 🌸 動画（video）透過背景を使いたい人向けの設定（コメントアウト保管） 🌸
+        .weather-panel video.weather-bg-video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .weather-panel .weather-item {
+            position: relative;
+            z-index: 1;
+        }
+        */
+
         .weather-item { text-align: center; }
-        .weather-city { font-size: 10px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
-        .weather-info { font-size: 18px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
+        .weather-city { font-size: 14px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
+        .weather-info { font-size: 22px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
 
         /* 🌸 実用ランチャー（カレンダー上部） */
         .utility-launcher {
@@ -506,7 +532,7 @@
           
 
 　　<script>
-        // --- 天気取得魔法 ---
+        // --- 天気取得 ＆ 仙台リアルタイム天気背景連動魔法 ---
         async function updateWeather() {
             const destinations = [
                 { name: "SENDAI", lat: 38.2682, lon: 140.8694 },
@@ -517,12 +543,25 @@
             
             try {
                 let html = "";
-                for (const loc of destinations) {
+                let sendaiWeatherCode = 0; // 仙台の天気コード保持用
+
+                for (let i = 0; i < destinations.length; i++) {
+                    const loc = destinations[i];
                     const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`);
                     const data = await res.json();
                     const temp = Math.round(data.current_weather.temperature);
                     const code = data.current_weather.weathercode;
-                    let icon = code === 0 ? "☀️" : code <= 3 ? "🌤️" : code >= 61 && code <= 67 ? "🌧️" : "☁️";
+                    
+                    // 仙台(配列の一番最初)のコードを記憶
+                    if (i === 0) sendaiWeatherCode = code;
+
+                    // 絵文字判定
+                    let icon = "☀️";
+                    if (code === 0) icon = "☀️";
+                    else if (code <= 3) icon = "🌤️";
+                    else if (code >= 71 && code <= 86) icon = "❄️"; // 雪
+                    else if (code >= 61 && code <= 67) icon = "🌧️"; // 雨
+                    else icon = "☁️";
                     
                     html += `
                         <div class="weather-item">
@@ -530,7 +569,33 @@
                             <div class="weather-info">${icon} ${temp}°C</div>
                         </div>`;
                 }
-                document.getElementById("weather-panel").innerHTML = html;
+                
+                const weatherPanel = document.getElementById("weather-panel");
+                if (weatherPanel) {
+                    weatherPanel.innerHTML = html;
+
+                    // 🌸★ 仙台の天気コードに応じた背景画像切り替えロジック ★🌸
+                    let bgWeatherImg = "sunny.webp"; // デフォルト（晴れ）
+
+                    if (sendaiWeatherCode === 0) {
+                        bgWeatherImg = "Clear-weather.webp"; // 快晴 (WMO 0)
+                    } else if (sendaiWeatherCode >= 1 && sendaiWeatherCode <= 2) {
+                        bgWeatherImg = "sunny.webp";         // 晴れ/曇りのち晴れ (WMO 1-2)
+                    } else if (sendaiWeatherCode === 3 || (sendaiWeatherCode >= 45 && sendaiWeatherCode <= 48)) {
+                        bgWeatherImg = "Cloudy.webp";        // 曇り/霧 (WMO 3, 45-48)
+                    } else if (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) {
+                        bgWeatherImg = "Rain.webp";          // 雨 (WMO 51-67, 80-82)
+                    } else if (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 86) {
+                        bgWeatherImg = "snow.webp";          // 雪 (WMO 71-86)
+                    } else {
+                        bgWeatherImg = "Cloudy.webp";
+                    }
+
+                    const bgUrl = `url("https://socrarius-tool.com/launcher/${bgWeatherImg}")`;
+                    if (!weatherPanel.style.backgroundImage.includes(bgWeatherImg)) {
+                        weatherPanel.style.backgroundImage = bgUrl;
+                    }
+                }
             } catch (e) {
                 document.getElementById("weather-panel").innerHTML = "Weather Link Error";
             }
