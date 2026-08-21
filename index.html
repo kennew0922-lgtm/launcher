@@ -640,9 +640,9 @@
                     } else if (currentHour >= 8 && currentHour < 16) {
                         overlayColor = "rgba(0, 0, 0, 0)";         // 昼 (8:00 ~ 15:59)：完全透明
                     } else if (currentHour >= 16 && currentHour < 18) {
-                        overlayColor = "rgba(255, 50, 0, 0.5)";    // 夕方 (16:00 ~ 17:59)：赤半透明 50%
+                        overlayColor = "rgba(255, 50, 0, 0.4)";    // 夕方 (16:00 ~ 17:59)：赤半透明 50%
                     } else {
-                        overlayColor = "rgba(0, 0, 0, 0.75)";      // 夜 (18:00 ~ 4:59)：黒半透明 75%
+                        overlayColor = "rgba(0, 5, 15, 0.8)";      // 夜 (18:00 ~ 4:59)：ほぼ黒パープル半透明 8%
                     }
 
                     // パネル内部にオーバーレイ要素を自動挿入
