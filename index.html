@@ -91,7 +91,7 @@
             /* background-blend-mode: overlay; */
             border: 1px solid rgba(0, 242, 254, 0.3);
             border-radius: 8px;
-            padding: 12px;
+            padding: 13px 28px 13px 28px;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -118,8 +118,8 @@
         */
 
         .weather-item { text-align: center; }
-        .weather-city { font-size: 12px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
-        .weather-info { font-size: 18px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
+        .weather-city { font-size: 14px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
+        .weather-info { font-size: 17.8px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
 
         /* 🌸 お天気エリア（時間帯オーバーレイ重畳対応） */
         .weather-panel {
@@ -130,7 +130,7 @@
         background-repeat: no-repeat;
         border: 1px solid rgba(0, 242, 254, 0.3);
         border-radius: 8px;
-        padding: 12px;
+        padding: 10px 2px 10px 2px;
         display: flex;
         justify-content: space-around;
         align-items: center;
@@ -151,6 +151,7 @@
 
         /* テキスト等の要素はオーバーレイより上へ */
         .weather-item {
+        padding: 0px 10px 0px 10px;
         position: relative;
         z-index: 2; /* オーバーレイ(1)より上 */
         text-align: center;
@@ -188,7 +189,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* サーモグラフィーの中身（温度に応じて伸び縮み＆発光） */
+/* 🌸 サーモグラフィーのメーター中身（動的グラデーション対応） 🌸 */
 .thermo-fill {
     position: absolute;
     bottom: 0;
@@ -197,42 +198,22 @@
     transition: height 0.8s ease-in-out, background 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
 }
 
-.thermo-label {
-    font-size: 8px;
-    color: #00f2fe;
-    margin-top: 2px;
-    font-family: 'Share Tech Mono', monospace;
-    opacity: 0.8;
+/* 🔥 猛暑（30℃以上）：赤熱パルス発光 */
+.thermo-pulse-hot {
+    animation: hot-pulse 1.2s infinite alternate;
 }
-
-/* 🔥 30℃以上（猛暑日・超高温発光） */
-.thermo-hot {
-    background: linear-gradient(to top, #ff4e50, #f9d423);
-    box-shadow: 0 0 10px #ff3300, 0 0 20px #ff0055;
-    animation: hot-pulse 1.5s infinite alternate;
-}
-
 @keyframes hot-pulse {
     0% { filter: drop-shadow(0 0 2px #ff0000); }
-    100% { filter: drop-shadow(0 0 8px #ff5500); }
+    100% { filter: drop-shadow(0 0 10px #ff3300); }
 }
 
-/* ❄️ 0℃未満（極寒・青白氷結発光） */
-.thermo-cold {
-    background: linear-gradient(to top, #00c6ff, #0072ff, #ffffff);
-    box-shadow: 0 0 10px #00f2fe, 0 0 20px #ffffff;
-    animation: cold-pulse 2s infinite alternate;
+/* ❄️ 極寒（0℃以下）：氷結パルス発光 */
+.thermo-pulse-cold {
+    animation: cold-pulse 1.5s infinite alternate;
 }
-
 @keyframes cold-pulse {
     0% { filter: drop-shadow(0 0 2px #00f2fe); }
-    100% { filter: drop-shadow(0 0 8px #ffffff); }
-}
-
-/* 🌿 通常温度帯（サイバーネオンブルー〜グリーン） */
-.thermo-normal {
-    background: linear-gradient(to top, #00f2fe, #4facfe);
-    box-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+    100% { filter: drop-shadow(0 0 10px #ffffff); }
 }
 
         /* 🌸 実用ランチャー（カレンダー上部） */
@@ -870,25 +851,37 @@ async function updateWeather() {
                     <div class="weather-info">${icon} ${temp}°C</div>
                 </div>`;
 
-            // 🌸★ サーモグラフィー計算ロジック（-10℃〜40℃の範囲でゲージ化） ★🌸
-            // ゲージ高さパーセント（最低5%保証）
-            let fillPercent = Math.min(Math.max(((temp + 10) / 50) * 100, 5), 100);
-            
-            // 発光＆グラデーション判定クラス
-            let colorClass = "thermo-normal";
-            if (temp >= 30) {
-                colorClass = "thermo-hot";  // 🔥 30度超えで赤熱グラデーション＆パルス発光！
-            } else if (temp < 0) {
-                colorClass = "thermo-cold"; // ❄️ 0度未満で氷結青白発光！
-            }
+            // 🌸★ サーモグラフィー計算ロジック（1℃単位の変色魔法） ★🌸
+// 温度範囲（0℃〜30℃）を基準にパーセント算出
+let fillPercent = Math.min(Math.max(((temp + 5) / 40) * 100, 8), 100);
 
-            thermoHtml += `
-                <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C">
-                    <div class="thermo-bar">
-                        <div class="thermo-fill ${colorClass}" style="height: ${fillPercent}%;"></div>
-                    </div>
-                    <div class="thermo-label">${loc.name.substring(0, 1)}</div>
-                </div>`;
+// 色相（Hue）の計算：0℃で青(240)、30℃で赤(0)へ1℃ずつ無段階変化！
+// 0℃=青(240), 6℃=水色(192), 12℃=緑(144), 18℃=黄緑(96), 24℃=オレンジ(48), 30℃=赤(0)
+let clampedTemp = Math.min(Math.max(temp, 0), 30); // 0〜30に制限
+let hue = Math.round(240 - (clampedTemp / 30) * 240); // 1℃あたり8度ずつ色相が変化！
+
+// 計算した色相でグラデーションを作成
+let mainColor = `hsl(${hue}, 100%, 50%)`;
+let lightColor = `hsl(${hue}, 100%, 70%)`;
+let gradientStyle = `background: linear-gradient(to top, ${mainColor}, ${lightColor}); box-shadow: 0 0 6px ${mainColor};`;
+
+// パルス発光の追加クラス判定
+let pulseClass = "";
+if (temp >= 30) {
+    pulseClass = "thermo-pulse-hot";
+    gradientStyle = `background: linear-gradient(to top, #ff0000, #ff9900);`; // 30度超えは灼熱赤
+} else if (temp <= 0) {
+    pulseClass = "thermo-pulse-cold";
+    gradientStyle = `background: linear-gradient(to top, #0055ff, #00f2fe, #ffffff);`; // 0度以下は氷結白青
+}
+
+thermoHtml += `
+    <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C">
+        <div class="thermo-bar">
+            <div class="thermo-fill ${pulseClass}" style="height: ${fillPercent}%; ${gradientStyle}"></div>
+        </div>
+        <div class="thermo-label">${loc.name.substring(0, 1)}</div>
+    </div>`;
         }
         
         const weatherPanel = document.getElementById("weather-panel");
