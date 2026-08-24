@@ -73,6 +73,13 @@
             gap: 15px;
         }
 
+        /* 🌸 サーモグラフィーメーター用レイアウト 🌸 */
+.weather-panel-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
         /* 🌸 お天気エリア（横配置＆リアルタイム天気背景連動バージョン） */
         .weather-panel {
             position: relative;
@@ -111,8 +118,8 @@
         */
 
         .weather-item { text-align: center; }
-        .weather-city { font-size: 14px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
-        .weather-info { font-size: 22px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
+        .weather-city { font-size: 12px; color: #00f2fe; opacity: 0.5; margin-bottom: 4px; }
+        .weather-info { font-size: 18px; color: #00f2fe; font-weight: bold; opacity: 0.5; }
 
         /* 🌸 お天気エリア（時間帯オーバーレイ重畳対応） */
         .weather-panel {
@@ -148,6 +155,85 @@
         z-index: 2; /* オーバーレイ(1)より上 */
         text-align: center;
         }
+
+        /* サーモグラフィー表示エリア */
+.thermo-container {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 52px;
+    padding: 6px 8px;
+    background: rgba(0, 10, 30, 0.7);
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
+
+.thermo-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+/* サーモグラフィーの縦バー本体 */
+.thermo-bar {
+    width: 8px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* サーモグラフィーの中身（温度に応じて伸び縮み＆発光） */
+.thermo-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-radius: 4px;
+    transition: height 0.8s ease-in-out, background 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
+}
+
+.thermo-label {
+    font-size: 8px;
+    color: #00f2fe;
+    margin-top: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    opacity: 0.8;
+}
+
+/* 🔥 30℃以上（猛暑日・超高温発光） */
+.thermo-hot {
+    background: linear-gradient(to top, #ff4e50, #f9d423);
+    box-shadow: 0 0 10px #ff3300, 0 0 20px #ff0055;
+    animation: hot-pulse 1.5s infinite alternate;
+}
+
+@keyframes hot-pulse {
+    0% { filter: drop-shadow(0 0 2px #ff0000); }
+    100% { filter: drop-shadow(0 0 8px #ff5500); }
+}
+
+/* ❄️ 0℃未満（極寒・青白氷結発光） */
+.thermo-cold {
+    background: linear-gradient(to top, #00c6ff, #0072ff, #ffffff);
+    box-shadow: 0 0 10px #00f2fe, 0 0 20px #ffffff;
+    animation: cold-pulse 2s infinite alternate;
+}
+
+@keyframes cold-pulse {
+    0% { filter: drop-shadow(0 0 2px #00f2fe); }
+    100% { filter: drop-shadow(0 0 8px #ffffff); }
+}
+
+/* 🌿 通常温度帯（サイバーネオンブルー〜グリーン） */
+.thermo-normal {
+    background: linear-gradient(to top, #00f2fe, #4facfe);
+    box-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
 
         /* 🌸 実用ランチャー（カレンダー上部） */
         .utility-launcher {
@@ -487,12 +573,17 @@
             <div id="cyber-clock-date">2026/00/00 (―)</div>
             </div>
             
-            <!-- 🌸 天気君の横並び魔法 -->
-            <div id="weather-panel" class="weather-panel">
-                <div class="weather-item">Loading Weather Data...</div>
-            </div>
-
-         
+            <!-- 🌸 天気君 ＆ サーモグラフィー設置魔法 🌸 -->
+<div class="weather-panel-container">
+    <div id="weather-panel" class="weather-panel">
+        <div class="weather-item">Loading Weather Data...</div>
+    </div>
+    <!-- 縦型サーモグラフィーユニット -->
+    <div id="thermo-panel" class="thermo-container">
+        <!-- JSで自動生成されます -->
+    </div>
+</div>
+       
 
             <!-- 🌸 Googleカレンダー透過魔改造ユニット 🌸 -->
 <div style="
@@ -642,7 +733,7 @@
                     } else if (currentHour >= 16 && currentHour < 18) {
                         overlayColor = "rgba(255, 50, 0, 0.4)";    // 夕方 (16:00 ~ 17:59)：赤半透明 50%
                     } else {
-                        overlayColor = "rgba(0, 5, 15, 0.8)";      // 夜 (18:00 ~ 4:59)：ほぼ黒パープル半透明 8%
+                        overlayColor = "rgba(0, 5, 15, 0.8)";      // 夜 (18:00 ~ 4:59)：ほぼ黒パープル半透明 80%
                     }
 
                     // パネル内部にオーバーレイ要素を自動挿入
@@ -741,6 +832,109 @@ cloudiaLinks.forEach(link => {
     }
   });
 });
+
+// --- 天気取得 ＆ リアルタイム温度サーモグラフィー生成魔法 ---
+async function updateWeather() {
+    const destinations = [
+        { name: "SENDAI", lat: 38.2682, lon: 140.8694 },
+        { name: "TOKYO", lat: 35.6895, lon: 139.6917 },
+        { name: "N.Y.", lat: 40.7128, lon: -74.0060 },
+        { name: "LONDON", lat: 51.5074, lon: -0.1278 }
+    ];
+    
+    try {
+        let html = "";
+        let thermoHtml = "";
+        let sendaiWeatherCode = 0;
+
+        for (let i = 0; i < destinations.length; i++) {
+            const loc = destinations[i];
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`);
+            const data = await res.json();
+            const temp = Math.round(data.current_weather.temperature);
+            const code = data.current_weather.weathercode;
+            
+            if (i === 0) sendaiWeatherCode = code;
+
+            // 天気アイコン判定
+            let icon = "☀️";
+            if (code === 0) icon = "☀️";
+            else if (code <= 3) icon = "🌤️";
+            else if (code >= 71 && code <= 86) icon = "❄️";
+            else if (code >= 61 && code <= 67) icon = "🌧️";
+            else icon = "☁️";
+            
+            html += `
+                <div class="weather-item">
+                    <div class="weather-city">${loc.name}</div>
+                    <div class="weather-info">${icon} ${temp}°C</div>
+                </div>`;
+
+            // 🌸★ サーモグラフィー計算ロジック（-10℃〜40℃の範囲でゲージ化） ★🌸
+            // ゲージ高さパーセント（最低5%保証）
+            let fillPercent = Math.min(Math.max(((temp + 10) / 50) * 100, 5), 100);
+            
+            // 発光＆グラデーション判定クラス
+            let colorClass = "thermo-normal";
+            if (temp >= 30) {
+                colorClass = "thermo-hot";  // 🔥 30度超えで赤熱グラデーション＆パルス発光！
+            } else if (temp < 0) {
+                colorClass = "thermo-cold"; // ❄️ 0度未満で氷結青白発光！
+            }
+
+            thermoHtml += `
+                <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C">
+                    <div class="thermo-bar">
+                        <div class="thermo-fill ${colorClass}" style="height: ${fillPercent}%;"></div>
+                    </div>
+                    <div class="thermo-label">${loc.name.substring(0, 1)}</div>
+                </div>`;
+        }
+        
+        const weatherPanel = document.getElementById("weather-panel");
+        if (weatherPanel) {
+            weatherPanel.innerHTML = html;
+
+            // 背景画像切替処理（既存ロジックそのまま）
+            let bgWeatherImg = "sunny.webp";
+            if (sendaiWeatherCode === 0) bgWeatherImg = "Clear-weather.webp";
+            else if (sendaiWeatherCode >= 1 && sendaiWeatherCode <= 2) bgWeatherImg = "sunny.webp";
+            else if (sendaiWeatherCode === 3 || (sendaiWeatherCode >= 45 && sendaiWeatherCode <= 48)) bgWeatherImg = "Cloudy.webp";
+            else if (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) bgWeatherImg = "Rain.webp";
+            else if (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 86) bgWeatherImg = "snow.webp";
+
+            const bgUrl = `url("https://socrarius-tool.com/launcher/${bgWeatherImg}")`;
+            if (!weatherPanel.style.backgroundImage.includes(bgWeatherImg)) {
+                weatherPanel.style.backgroundImage = bgUrl;
+            }
+
+            // オーバーレイ処理（既存ロジックそのまま）
+            const currentHour = new Date().getHours();
+            let overlayColor = "rgba(0, 0, 0, 0.75)";
+            if (currentHour >= 5 && currentHour < 8) overlayColor = "rgba(255, 255, 255, 0.1)";
+            else if (currentHour >= 8 && currentHour < 16) overlayColor = "rgba(0, 0, 0, 0)";
+            else if (currentHour >= 16 && currentHour < 18) overlayColor = "rgba(255, 50, 0, 0.4)";
+            else overlayColor = "rgba(0, 5, 15, 0.8)";
+
+            let overlayElem = weatherPanel.querySelector('.weather-overlay');
+            if (!overlayElem) {
+                overlayElem = document.createElement('div');
+                overlayElem.className = 'weather-overlay';
+                weatherPanel.appendChild(overlayElem);
+            }
+            overlayElem.style.backgroundColor = overlayColor;
+        }
+
+        // サーモグラフィーの描画
+        const thermoPanel = document.getElementById("thermo-panel");
+        if (thermoPanel) {
+            thermoPanel.innerHTML = thermoHtml;
+        }
+
+    } catch (e) {
+        document.getElementById("weather-panel").innerHTML = "Weather Link Error";
+    }
+}
 
     </script>
 
