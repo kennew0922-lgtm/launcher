@@ -181,7 +181,7 @@
 /* サーモグラフィーの縦バー本体 */
 .thermo-bar {
     width: 8px;
-    height: 45px;
+    height: 50px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     position: relative;
@@ -205,6 +205,16 @@
 @keyframes hot-pulse {
     0% { filter: drop-shadow(0 0 2px #ff0000); }
     100% { filter: drop-shadow(0 0 10px #ff3300); }
+}
+
+/* 🌸 サーモグラフィー下部の文字（S T N L）の色調整 🌸 */
+.thermo-label {
+    font-size: 9px;
+    color: #36f0fc !important; /* 🔥 時計と同じシアンカラーに変更！ */
+    margin-top: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(54, 240, 252, 0.6); /* 時計のようなほんのり発光付き✨ */
 }
 
 /* ❄️ 極寒（0℃以下）：氷結パルス発光 */
