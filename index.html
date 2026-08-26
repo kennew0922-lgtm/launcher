@@ -419,7 +419,7 @@
 </head>
 <body>
 
-    <div class="system-banner">WEB LINKS & CALENDAE, WEAEKER</div>
+    <div class="system-banner">WEB LINKS & CALENDAR, WEATHER</div>
 
     <div class="main-layout">
         <div class="left-content">
@@ -724,11 +724,19 @@
                     if (i === 0) sendaiWeatherCode = code;
 
                     // 絵文字判定
-                    let icon = "☀️";
-                    if (code === 0) icon = "☀️";
-                    else if (code <= 3) icon = "🌤️";
-                    else if (code >= 71 && code <= 86) icon = "❄️"; // 雪
-                    else if (code >= 61 && code <= 67) icon = "🌧️"; // 雨
+                    let icon = "☁️";
+                    if (code === 0) icon = "☀️";// 快晴
+                    else if (code === 1) icon = "🌤️"; 
+                    else if (code === 2) icon = "⛅"; // 部分的な曇り
+                    else if (code === 3) icon = "☁️";       // 曇り
+                    else if (code === 45 || code === 48) icon = "🌫️";       // 霧
+                    else if (code >= 51 && code <= 57) icon = "🌦️";       // 霧雨
+                    else if (code >= 61 && code <= 67) icon = "🌧️";       // 雨
+                    else if (code >= 71 && code <= 77) icon = "🌧️";       // 雨
+                    else if (code >= 71 && code <= 77) icon = "❄️";       // 雪
+                    else if (code >= 80 && code <= 82) icon = "🌦️";       // にわか雨
+                    else if (code >= 85 && code <= 86) icon = "🌨️";       // にわか雪
+                    else if (code >= 95) icon = "⛈️";       // 雷雨
                     else icon = "☁️";
                     
                     html += `
@@ -743,21 +751,51 @@
                     weatherPanel.innerHTML = html;
 
                     // 🌸★ 仙台の天気コードに応じた背景画像切り替えロジック ★🌸
-                    let bgWeatherImg = "sunny.webp"; // デフォルト（晴れ）
+                let bgWeatherImg = "Cloudy.webp"; // デフォルトは曇り
 
-                    if (sendaiWeatherCode === 0) {
-                        bgWeatherImg = "Clear-weather.webp"; // 快晴 (WMO 0)
-                    } else if (sendaiWeatherCode >= 1 && sendaiWeatherCode <= 2) {
-                        bgWeatherImg = "sunny.webp";         // 晴れ/曇りのち晴れ (WMO 1-2)
-                    } else if (sendaiWeatherCode === 3 || (sendaiWeatherCode >= 45 && sendaiWeatherCode <= 48)) {
-                        bgWeatherImg = "Cloudy.webp";        // 曇り/霧 (WMO 3, 45-48)
-                    } else if (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) {
-                        bgWeatherImg = "Rain.webp";          // 雨 (WMO 51-67, 80-82)
-                    } else if (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 86) {
-                        bgWeatherImg = "snow.webp";          // 雪 (WMO 71-86)
-                    } else {
-                        bgWeatherImg = "Cloudy.webp";
-                    }
+                if (sendaiWeatherCode === 0) {
+
+                bgWeatherImg = "Clear-weather.webp"; // 快晴
+
+                } else if (
+                sendaiWeatherCode === 1 ||
+                 sendaiWeatherCode === 2
+                ) {
+
+                bgWeatherImg = "sunny.webp"; // 主に晴れ / 部分的な曇り
+
+                } else if (
+                sendaiWeatherCode === 3 ||
+                sendaiWeatherCode === 45 ||
+                sendaiWeatherCode === 48
+                ) {
+
+                bgWeatherImg = "Cloudy.webp"; // 曇り / 霧
+
+                } else if (
+                (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) ||
+                 (sendaiWeatherCode >= 80 && sendaiWeatherCode <= 82)
+                ) {
+
+                 bgWeatherImg = "Rain.webp"; // 霧雨 / 雨 / にわか雨
+
+                } else if (
+                (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 77) ||
+                (sendaiWeatherCode >= 85 && sendaiWeatherCode <= 86)
+                ) {
+
+                bgWeatherImg = "snow.webp"; // 雪 / にわか雪
+
+                } else if (
+                sendaiWeatherCode >= 95
+                ) {
+
+                bgWeatherImg = "Rain.webp"; // 雷雨は雨系背景
+
+                } else {
+
+                 bgWeatherImg = "Cloudy.webp";
+                }
 
                     const bgUrl = `url("https://socrarius-tool.com/launcher/${bgWeatherImg}")`;
                     if (!weatherPanel.style.backgroundImage.includes(bgWeatherImg)) {
