@@ -723,7 +723,7 @@
                     // 仙台(配列の一番最初)のコードを記憶
                     if (i === 0) sendaiWeatherCode = code;
 
-// 絵文字判定
+// 絵文字判定 📚校長先生最終調整📚
 let icon = "☁️";
 
 if (code === 0) icon = "☀️";                          // 快晴
@@ -750,7 +750,7 @@ else icon = "☁️";
                 if (weatherPanel) {
                     weatherPanel.innerHTML = html;
 
-                    // 🌸★ 仙台の天気コードに応じた背景画像切り替えロジック ★🌸
+                    // 🌸★ 仙台の天気コードに応じた背景画像切り替えロジック 📚校長先生最終調整📚★🌸
                 let bgWeatherImg = "Cloudy.webp"; // デフォルトは曇り
 
                 if (sendaiWeatherCode === 0) {
