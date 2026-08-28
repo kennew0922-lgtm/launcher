@@ -990,7 +990,7 @@ thermoHtml += `
             // 背景画像切替処理（既存ロジックそのまま）
             let bgWeatherImg = "sunny.webp";
             if (sendaiWeatherCode === 0) bgWeatherImg = "Clear-weather.webp";
-            else if (sendaiWeatherCode >= 1 && sendaiWeatherCode <= 2) bgWeatherImg = "sunny.webp";
+            else if (sendaiWeatherCode >= 1 && sendaiWeatherCode <= 2) bgWeatherImg = "sunny.png";
             else if (sendaiWeatherCode === 3 || (sendaiWeatherCode >= 45 && sendaiWeatherCode <= 48)) bgWeatherImg = "Cloudy.webp";
             else if (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) bgWeatherImg = "Rain.webp";
             else if (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 86) bgWeatherImg = "snow.webp";
