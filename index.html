@@ -700,220 +700,7 @@
           
 
 　　<script>
-       // --- 天気取得 ＆ 仙台リアルタイム天気背景 ＆ 時間帯オーバーレイ重畳魔法 ---
-        async function updateWeather() {
-            const destinations = [
-                { name: "SENDAI", lat: 38.2682, lon: 140.8694 },
-                { name: "TOKYO", lat: 35.6895, lon: 139.6917 },
-                { name: "N.Y.", lat: 40.7128, lon: -74.0060 },
-                { name: "LONDON", lat: 51.5074, lon: -0.1278 }
-            ];
-            
-            try {
-                let html = "";
-                let sendaiWeatherCode = 0; // 仙台の天気コード保持用
-
-                for (let i = 0; i < destinations.length; i++) {
-                    const loc = destinations[i];
-                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`);
-                    const data = await res.json();
-                    const temp = Math.round(data.current_weather.temperature);
-                    const code = data.current_weather.weathercode;
-                    
-                    // 仙台(配列の一番最初)のコードを記憶
-                    if (i === 0) sendaiWeatherCode = code;
-
-// 絵文字判定 📚校長先生最終調整📚
-let icon = "☁️";
-
-if (code === 0) icon = "☀️";                          // 快晴
-else if (code === 1) icon = "🌤️";                    // 主に晴れ
-else if (code === 2) icon = "⛅";                     // 部分的な曇り
-else if (code === 3) icon = "☁️";                     // 曇り
-else if (code === 45 || code === 48) icon = "🌫️";   // 霧
-else if (code >= 51 && code <= 57) icon = "🌦️";      // 霧雨
-else if (code >= 61 && code <= 67) icon = "🌧️";      // 雨
-else if (code >= 71 && code <= 77) icon = "❄️";      // 雪
-else if (code >= 80 && code <= 82) icon = "🌦️";      // にわか雨
-else if (code >= 85 && code <= 86) icon = "🌨️";      // にわか雪
-else if (code >= 95) icon = "⛈️";                    // 雷雨
-else icon = "☁️";
-                    
-                    html += `
-                        <div class="weather-item">
-                            <div class="weather-city">${loc.name}</div>
-                            <div class="weather-info">${icon} ${temp}°C</div>
-                        </div>`;
-                }
-                
-                const weatherPanel = document.getElementById("weather-panel");
-                if (weatherPanel) {
-                    weatherPanel.innerHTML = html;
-
-                    // 🌸★ 仙台の天気コードに応じた背景画像切り替えロジック 📚校長先生最終調整📚★🌸
-                let bgWeatherImg = "Cloudy.webp"; // デフォルトは曇り
-
-                if (sendaiWeatherCode === 0) {
-
-                bgWeatherImg = "Clear-weather.webp"; // 快晴
-
-                } else if (
-                sendaiWeatherCode === 1 ||
-                 sendaiWeatherCode === 2
-                ) {
-
-                bgWeatherImg = "sunny.webp"; // 主に晴れ / 部分的な曇り
-
-                } else if (
-                sendaiWeatherCode === 3 ||
-                sendaiWeatherCode === 45 ||
-                sendaiWeatherCode === 48
-                ) {
-
-                bgWeatherImg = "Cloudy.webp"; // 曇り / 霧
-
-                } else if (
-                (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) ||
-                 (sendaiWeatherCode >= 80 && sendaiWeatherCode <= 82)
-                ) {
-
-                 bgWeatherImg = "Rain.webp"; // 霧雨 / 雨 / にわか雨
-
-                } else if (
-                (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 77) ||
-                (sendaiWeatherCode >= 85 && sendaiWeatherCode <= 86)
-                ) {
-
-                bgWeatherImg = "snow.webp"; // 雪 / にわか雪
-
-                } else if (
-                sendaiWeatherCode >= 95
-                ) {
-
-                bgWeatherImg = "Rain.webp"; // 雷雨は雨系背景
-
-                } else {
-
-                 bgWeatherImg = "Cloudy.webp";
-                }
-
-                    const bgUrl = `url("https://socrarius-tool.com/launcher/${bgWeatherImg}")`;
-                    if (!weatherPanel.style.backgroundImage.includes(bgWeatherImg)) {
-                        weatherPanel.style.backgroundImage = bgUrl;
-                    }
-
-                    // 🌸★ 時間帯に応じたカラーオーバーレイの適用魔法 ★🌸
-                    const currentHour = new Date().getHours();
-                    let overlayColor = "rgba(0, 0, 0, 0.75)"; // デフォルト：夜 (黒半透明 75%)
-
-                    if (currentHour >= 5 && currentHour < 8) {
-                        overlayColor = "rgba(255, 255, 255, 0.1)"; // 朝 (5:00 ~ 7:59)：白半透明 10%
-                    } else if (currentHour >= 8 && currentHour < 16) {
-                        overlayColor = "rgba(0, 0, 0, 0)";         // 昼 (8:00 ~ 15:59)：完全透明
-                    } else if (currentHour >= 16 && currentHour < 18) {
-                        overlayColor = "rgba(255, 50, 0, 0.4)";    // 夕方 (16:00 ~ 17:59)：赤半透明 50%
-                    } else {
-                        overlayColor = "rgba(0, 5, 15, 0.8)";      // 夜 (18:00 ~ 4:59)：ほぼ黒パープル半透明 80%
-                    }
-
-                    // パネル内部にオーバーレイ要素を自動挿入
-                    let overlayElem = weatherPanel.querySelector('.weather-overlay');
-                    if (!overlayElem) {
-                        overlayElem = document.createElement('div');
-                        overlayElem.className = 'weather-overlay';
-                        weatherPanel.appendChild(overlayElem);
-                    }
-                    overlayElem.style.backgroundColor = overlayColor;
-                }
-            } catch (e) {
-                document.getElementById("weather-panel").innerHTML = "Weather Link Error";
-            }
-        }
-        updateWeather();
-
-        /* ✨ リアルタイム・サイバー時計 ＆ 時間帯背景連動更新魔法 ✨ */
-function updateCyberClock() {
-    const now = new Date();
-    
-    // 時・分・秒を2桁揃えに
-    const currentHour = now.getHours();
-    const hours = String(currentHour).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    
-    // 年・月・日と曜日
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const date = String(now.getDate()).padStart(2, '0');
-    const days = ['日', '月', '火', '水', '木', '金', '土'];
-    const dayName = days[now.getDay()];
-
-    const clockContainer = document.getElementById('cyber-clock-container');
-    const timeElem = document.getElementById('cyber-clock-time');
-    const dateElem = document.getElementById('cyber-clock-date');
-
-    // 🌸★ 時間帯による背景切り替えロジック ★🌸
-    if (clockContainer) {
-        let bgImg = "night.webp"; // デフォルト（夜）
-
-        if (currentHour >= 5 && currentHour < 8) {
-            bgImg = "morning.webp"; // 朝 (5:00 ~ 07:59)
-        } else if (currentHour >= 8 && currentHour < 16) {
-            bgImg = "noon.webp";    // 昼 (8:00 ~ 15:59)
-        } else if (currentHour >= 16 && currentHour < 18) {
-            bgImg = "evening.webp"; // 夕方 (16:00 ~ 17:59)
-        } else {
-            bgImg = "night.webp";   // 夜 (19:00 ~ 4:59)
-        }
-
-        const bgUrl = `url("https://socrarius-tool.com/launcher/${bgImg}")`;
-        if (!clockContainer.style.backgroundImage.includes(bgImg)) {
-            clockContainer.style.backgroundImage = bgUrl;
-        }
-    }
-
-    if (timeElem) {
-        timeElem.textContent = `${hours}:${minutes}:${seconds}`;
-    }
-    if (dateElem) {
-        dateElem.textContent = `${year}/${month}/${date} (${dayName})`;
-    }
-}
-
-// 初回実行＆1秒ごとにタイマー駆動！
-updateCyberClock();
-setInterval(updateCyberClock, 1000);
-
-
-/* ✨効果音魔法準備（個別制御・完全修正版） */
-
-// ① 通常の全アイコンリンク（.icon-link）→ magic20.mp3（シュイン音）
-const normalLinks = document.querySelectorAll('.icon-link');
-const clickSound = document.getElementById('click-sound'); // magic20.mp3
-
-normalLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    if (clickSound) {
-      clickSound.currentTime = 0; // 連打対応
-      clickSound.play().catch(e => console.log("Audio play blocked:", e));
-    }
-  });
-});
-
-// ② Cloudiaさん専用リンク（.icon-link-cloudia）→ cyber-.mp3（特別サイバー音）
-const cloudiaLinks = document.querySelectorAll('.icon-link-cloudia');
-const clickMagic = document.getElementById('click-magic'); // cyber-.mp3
-
-cloudiaLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    if (clickMagic) {
-      clickMagic.currentTime = 0; // 連打対応
-      clickMagic.play().catch(e => console.log("Audio play blocked:", e));
-    }
-  });
-});
-
-// --- 天気取得 ＆ リアルタイム温度サーモグラフィー生成魔法 ---
+/* ✨ 1. 天気取得 ＆ 仙台リアルタイム天気背景 ＆ サーモグラフィー統合魔法 ✨ */
 async function updateWeather() {
     const destinations = [
         { name: "SENDAI", lat: 38.2682, lon: 140.8694 },
@@ -925,7 +712,7 @@ async function updateWeather() {
     try {
         let html = "";
         let thermoHtml = "";
-        let sendaiWeatherCode = 0;
+        let sendaiWeatherCode = 0; // 仙台の天気コード保持用
 
         for (let i = 0; i < destinations.length; i++) {
             const loc = destinations[i];
@@ -934,14 +721,22 @@ async function updateWeather() {
             const temp = Math.round(data.current_weather.temperature);
             const code = data.current_weather.weathercode;
             
+            // 仙台(配列の一番最初)のコードを記憶
             if (i === 0) sendaiWeatherCode = code;
 
-            // 天気アイコン判定
-            let icon = "☀️";
-            if (code === 0) icon = "☀️";
-            else if (code <= 3) icon = "🌤️";
-            else if (code >= 71 && code <= 86) icon = "❄️";
-            else if (code >= 61 && code <= 67) icon = "🌧️";
+            // 📚 校長先生＆ケンくん最終調整：絵文字判定細分化 📚
+            let icon = "☁️";
+            if (code === 0) icon = "☀️";                         // 快晴
+            else if (code === 1) icon = "🌤️";                    // 主に晴れ
+            else if (code === 2) icon = "⛅";                     // 部分的な曇り
+            else if (code === 3) icon = "☁️";                     // 曇り
+            else if (code === 45 || code === 48) icon = "🌫️";   // 霧
+            else if (code >= 51 && code <= 57) icon = "🌦️";      // 霧雨
+            else if (code >= 61 && code <= 67) icon = "🌧️";      // 雨
+            else if (code >= 71 && code <= 77) icon = "❄️";      // 雪
+            else if (code >= 80 && code <= 82) icon = "🌦️";      // にわか雨
+            else if (code >= 85 && code <= 86) icon = "🌨️";      // にわか雪
+            else if (code >= 95) icon = "⛈️";                    // 雷雨
             else icon = "☁️";
             
             html += `
@@ -951,62 +746,73 @@ async function updateWeather() {
                 </div>`;
 
             // 🌸★ サーモグラフィー計算ロジック（1℃単位の変色魔法） ★🌸
-// 温度範囲（0℃〜30℃）を基準にパーセント算出
-let fillPercent = Math.min(Math.max(((temp + 5) / 40) * 100, 8), 100);
+            let fillPercent = Math.min(Math.max(((temp + 5) / 40) * 100, 8), 100);
+            let clampedTemp = Math.min(Math.max(temp, 0), 30);
+            let hue = Math.round(240 - (clampedTemp / 30) * 240);
 
-// 色相（Hue）の計算：0℃で青(240)、30℃で赤(0)へ1℃ずつ無段階変化！
-// 0℃=青(240), 6℃=水色(192), 12℃=緑(144), 18℃=黄緑(96), 24℃=オレンジ(48), 30℃=赤(0)
-let clampedTemp = Math.min(Math.max(temp, 0), 30); // 0〜30に制限
-let hue = Math.round(240 - (clampedTemp / 30) * 240); // 1℃あたり8度ずつ色相が変化！
+            let mainColor = `hsl(${hue}, 100%, 50%)`;
+            let lightColor = `hsl(${hue}, 100%, 70%)`;
+            let gradientStyle = `background: linear-gradient(to top, ${mainColor}, ${lightColor}); box-shadow: 0 0 6px ${mainColor};`;
 
-// 計算した色相でグラデーションを作成
-let mainColor = `hsl(${hue}, 100%, 50%)`;
-let lightColor = `hsl(${hue}, 100%, 70%)`;
-let gradientStyle = `background: linear-gradient(to top, ${mainColor}, ${lightColor}); box-shadow: 0 0 6px ${mainColor};`;
+            let pulseClass = "";
+            if (temp >= 30) {
+                pulseClass = "thermo-pulse-hot";
+                gradientStyle = `background: linear-gradient(to top, #ff0000, #ff9900);`;
+            } else if (temp <= 0) {
+                pulseClass = "thermo-pulse-cold";
+                gradientStyle = `background: linear-gradient(to top, #0055ff, #00f2fe, #ffffff);`;
+            }
 
-// パルス発光の追加クラス判定
-let pulseClass = "";
-if (temp >= 30) {
-    pulseClass = "thermo-pulse-hot";
-    gradientStyle = `background: linear-gradient(to top, #ff0000, #ff9900);`; // 30度超えは灼熱赤
-} else if (temp <= 0) {
-    pulseClass = "thermo-pulse-cold";
-    gradientStyle = `background: linear-gradient(to top, #0055ff, #00f2fe, #ffffff);`; // 0度以下は氷結白青
-}
-
-thermoHtml += `
-    <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C">
-        <div class="thermo-bar">
-            <div class="thermo-fill ${pulseClass}" style="height: ${fillPercent}%; ${gradientStyle}"></div>
-        </div>
-        <div class="thermo-label">${loc.name.substring(0, 1)}</div>
-    </div>`;
+            thermoHtml += `
+                <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C">
+                    <div class="thermo-bar">
+                        <div class="thermo-fill ${pulseClass}" style="height: ${fillPercent}%; ${gradientStyle}"></div>
+                    </div>
+                    <div class="thermo-label">${loc.name.substring(0, 1)}</div>
+                </div>`;
         }
         
         const weatherPanel = document.getElementById("weather-panel");
         if (weatherPanel) {
             weatherPanel.innerHTML = html;
 
-            // 背景画像切替処理（既存ロジックそのまま）
-            let bgWeatherImg = "sunny.webp";
-            if (sendaiWeatherCode === 0) bgWeatherImg = "Clear-weather.webp";
-            else if (sendaiWeatherCode >= 1 && sendaiWeatherCode <= 2) bgWeatherImg = "sunny.png";
-            else if (sendaiWeatherCode === 3 || (sendaiWeatherCode >= 45 && sendaiWeatherCode <= 48)) bgWeatherImg = "Cloudy.webp";
-            else if (sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) bgWeatherImg = "Rain.webp";
-            else if (sendaiWeatherCode >= 71 && sendaiWeatherCode <= 86) bgWeatherImg = "snow.webp";
+            // 📚 校長先生＆ケンくん最終調整：背景画像切り替えロジック 📚
+            let bgWeatherImg = "Cloudy.webp"; // デフォルトは曇り
+
+            if (sendaiWeatherCode === 0) {
+                bgWeatherImg = "Clear-weather.webp"; // 快晴
+            } else if (sendaiWeatherCode === 1 || sendaiWeatherCode === 2) {
+                bgWeatherImg = "sunny.png"; // 主に晴れ / 部分的な曇り
+            } else if (sendaiWeatherCode === 3 || sendaiWeatherCode === 45 || sendaiWeatherCode === 48) {
+                bgWeatherImg = "Cloudy.webp"; // 曇り / 霧
+            } else if ((sendaiWeatherCode >= 51 && sendaiWeatherCode <= 67) || (sendaiWeatherCode >= 80 && sendaiWeatherCode <= 82)) {
+                bgWeatherImg = "Rain.webp"; // 霧雨 / 雨 / にわか雨
+            } else if ((sendaiWeatherCode >= 71 && sendaiWeatherCode <= 77) || (sendaiWeatherCode >= 85 && sendaiWeatherCode <= 86)) {
+                bgWeatherImg = "snow.webp"; // 雪 / にわか雪
+            } else if (sendaiWeatherCode >= 95) {
+                bgWeatherImg = "thunder.webp"; // 雷雨
+            } else {
+                bgWeatherImg = "Cloudy.webp";
+            }
 
             const bgUrl = `url("https://socrarius-tool.com/launcher/${bgWeatherImg}")`;
             if (!weatherPanel.style.backgroundImage.includes(bgWeatherImg)) {
                 weatherPanel.style.backgroundImage = bgUrl;
             }
 
-            // オーバーレイ処理（既存ロジックそのまま）
+            // 🌸★ 時間帯に応じたカラーオーバーレイの適用魔法 ★🌸
             const currentHour = new Date().getHours();
             let overlayColor = "rgba(0, 0, 0, 0.75)";
-            if (currentHour >= 5 && currentHour < 8) overlayColor = "rgba(255, 255, 255, 0.1)";
-            else if (currentHour >= 8 && currentHour < 16) overlayColor = "rgba(0, 0, 0, 0)";
-            else if (currentHour >= 16 && currentHour < 18) overlayColor = "rgba(255, 50, 0, 0.4)";
-            else overlayColor = "rgba(0, 5, 15, 0.8)";
+
+            if (currentHour >= 5 && currentHour < 8) {
+                overlayColor = "rgba(255, 255, 255, 0.1)"; // 朝
+            } else if (currentHour >= 8 && currentHour < 16) {
+                overlayColor = "rgba(0, 0, 0, 0)";         // 昼
+            } else if (currentHour >= 16 && currentHour < 18) {
+                overlayColor = "rgba(255, 50, 0, 0.4)";    // 夕方
+            } else {
+                overlayColor = "rgba(0, 5, 15, 0.8)";      // 夜
+            }
 
             let overlayElem = weatherPanel.querySelector('.weather-overlay');
             if (!overlayElem) {
@@ -1024,11 +830,86 @@ thermoHtml += `
         }
 
     } catch (e) {
-        document.getElementById("weather-panel").innerHTML = "Weather Link Error";
+        if (document.getElementById("weather-panel")) {
+            document.getElementById("weather-panel").innerHTML = "Weather Link Error";
+        }
     }
 }
 
-    </script>
+// 実行呼び出し
+updateWeather();
+
+
+/* ✨ 2. リアルタイム・サイバー時計 ＆ 時間帯背景連動更新魔法 ✨ */
+function updateCyberClock() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const hours = String(currentHour).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const date = String(now.getDate()).padStart(2, '0');
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    const dayName = days[now.getDay()];
+
+    const clockContainer = document.getElementById('cyber-clock-container');
+    const timeElem = document.getElementById('cyber-clock-time');
+    const dateElem = document.getElementById('cyber-clock-date');
+
+    if (clockContainer) {
+        let bgImg = "night.webp";
+
+        if (currentHour >= 5 && currentHour < 8) {
+            bgImg = "morning.webp";
+        } else if (currentHour >= 8 && currentHour < 16) {
+            bgImg = "noon.webp";
+        } else if (currentHour >= 16 && currentHour < 18) {
+            bgImg = "evening.webp";
+        } else {
+            bgImg = "night.webp";
+        }
+
+        const bgUrl = `url("https://socrarius-tool.com/launcher/${bgImg}")`;
+        if (!clockContainer.style.backgroundImage.includes(bgImg)) {
+            clockContainer.style.backgroundImage = bgUrl;
+        }
+    }
+
+    if (timeElem) timeElem.textContent = `${hours}:${minutes}:${seconds}`;
+    if (dateElem) dateElem.textContent = `${year}/${month}/${date} (${dayName})`;
+}
+
+updateCyberClock();
+setInterval(updateCyberClock, 1000);
+
+
+/* ✨ 3. 効果音魔法（個別制御） ✨ */
+const normalLinks = document.querySelectorAll('.icon-link');
+const clickSound = document.getElementById('click-sound');
+
+normalLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (clickSound) {
+      clickSound.currentTime = 0;
+      clickSound.play().catch(e => console.log("Audio play blocked:", e));
+    }
+  });
+});
+
+const cloudiaLinks = document.querySelectorAll('.icon-link-cloudia');
+const clickMagic = document.getElementById('click-magic');
+
+cloudiaLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (clickMagic) {
+      clickMagic.currentTime = 0;
+      clickMagic.play().catch(e => console.log("Audio play blocked:", e));
+    }
+  });
+});
+</script>
 
 </body>
 </html>
