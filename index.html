@@ -706,6 +706,7 @@
 
 　　<script>
 /* ✨ 1. 天気取得 ＆ 仙台リアルタイム天気背景 ＆ サーモグラフィー統合魔法 ✨ */
+/* ✨ 1. 天気取得 ＆ 湿度追加 ＆ 仙台リアルタイム天気背景 ＆ サーモグラフィー統合魔法 ✨ */
 async function updateWeather() {
     const destinations = [
         { name: "SENDAI", lat: 38.2682, lon: 140.8694 },
@@ -719,12 +720,16 @@ async function updateWeather() {
         let thermoHtml = "";
         let sendaiWeatherCode = 0; // 仙台の天気コード保持用
 
-        for (let i = 0; i < destinations.length; i++) {
+       for (let i = 0; i < destinations.length; i++) {
             const loc = destinations[i];
-            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`);
+            // 🌸 URLパラメータを新形式（current=...）に一本化！
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,weather_code`);
             const data = await res.json();
-            const temp = Math.round(data.current_weather.temperature);
-            const code = data.current_weather.weathercode;
+            
+            // 💧 新形式データ構造から抽出
+            const temp = Math.round(data.current.temperature_2m);
+            const code = data.current.weather_code;
+            const humidity = data.current.relative_humidity_2m ?? "--";
             
             // 仙台(配列の一番最初)のコードを記憶
             if (i === 0) sendaiWeatherCode = code;
@@ -732,9 +737,9 @@ async function updateWeather() {
             // 📚 校長先生＆ケンくん最終調整：絵文字判定細分化 📚
             let icon = "☁️";
             if (code === 0) icon = "☀️";                         // 快晴
-            else if (code === 1) icon = "🌤️";                    // 主に晴れ
-            else if (code === 2) icon = "⛅";                     // 部分的な曇り
-            else if (code === 3) icon = "☁️";                     // 曇り
+            else if (code === 1) icon = "🌤️";                     // 主に晴れ
+            else if (code === 2) icon = "⛅";                      // 部分的な曇り
+            else if (code === 3) icon = "☁️";                      // 曇り
             else if (code === 45 || code === 48) icon = "🌫️";   // 霧
             else if (code >= 51 && code <= 57) icon = "🌦️";      // 霧雨
             else if (code >= 61 && code <= 67) icon = "🌧️";      // 雨
@@ -744,10 +749,11 @@ async function updateWeather() {
             else if (code >= 95) icon = "⛈️";                    // 雷雨
             else icon = "☁️";
             
+            // 💧 気温の横に「💧65%」のように湿度を追加表示！
             html += `
                 <div class="weather-item">
                     <div class="weather-city">${loc.name}</div>
-                    <div class="weather-info">${icon} ${temp}°C</div>
+                    <div class="weather-info">${icon} ${temp}°C <span style="font-size:12px; opacity:0.85; margin-left:4px;">💧${humidity}%</span></div>
                 </div>`;
 
             // 🌸★ サーモグラフィー計算ロジック（1℃単位の変色魔法） ★🌸
@@ -769,7 +775,7 @@ async function updateWeather() {
             }
 
             thermoHtml += `
-                <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C">
+                <div class="thermo-bar-wrapper" title="${loc.name}: ${temp}°C / 湿度: ${humidity}%">
                     <div class="thermo-bar">
                         <div class="thermo-fill ${pulseClass}" style="height: ${fillPercent}%; ${gradientStyle}"></div>
                     </div>
